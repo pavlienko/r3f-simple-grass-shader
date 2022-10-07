@@ -35,7 +35,7 @@ const Primitive: React.FC = () => {
       attach="material" 
       ref={shaderRef} 
       side={THREE.DoubleSide}
-      wireframe={true}
+      // wireframe={true}
       />
     </mesh>
   );
