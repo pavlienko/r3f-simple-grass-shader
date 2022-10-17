@@ -15,7 +15,6 @@ import { GLTF } from "three-stdlib";
 
 import grassModel from "../../assets/grass.glb";
 import grassTex from "../../assets/grass.png";
-import sky from "../../assets/sky.jpg"
 
 declare global {
   namespace JSX {
