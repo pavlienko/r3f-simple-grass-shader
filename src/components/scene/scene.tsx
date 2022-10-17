@@ -8,11 +8,12 @@ import {
 } from "@react-three/fiber";
 import { Suspense, useRef, useMemo } from "react";
 import * as THREE from "three";
-import { MainShader } from "../shader/shader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Perf } from "r3f-perf";
 import { GLTF } from "three-stdlib";
 
+import { MainShader } from "../shaders/mainShader";
+import { GroundShader } from "../shaders/groundShader";
 import grassModel from "../../assets/grass.glb";
 import grassTex from "../../assets/grass.png";
 
@@ -22,6 +23,10 @@ declare global {
       mainShader: ReactThreeFiber.Object3DNode<
         THREE.ShaderMaterial,
         typeof MainShader
+      >;
+      groundShader: ReactThreeFiber.Object3DNode<
+        THREE.ShaderMaterial,
+        typeof GroundShader
       >;
       orbitControls: ReactThreeFiber.Object3DNode<
         OrbitControls,
@@ -45,6 +50,7 @@ type GLTFResult = GLTF & {
 useGLTF.preload(grassModel);
 
 extend({ MainShader });
+extend({ GroundShader });
 extend({ OrbitControls });
 
 function Controls() {
@@ -83,9 +89,7 @@ const Field: React.FC<FieldProps> = ({ count }: FieldProps) => {
     const arr = new Array(count).fill(0);
     return {
       rotationArray: Float32Array.from(
-        arr.flatMap((_, i) => [
-          THREE.MathUtils.randFloat(0,Math.PI*2),
-        ])
+        arr.flatMap((_, i) => [THREE.MathUtils.randFloat(0, Math.PI * 2)])
       ),
     };
   }, [count]);
@@ -148,17 +152,15 @@ const Scene: React.FC = () => {
       <Canvas
         // dpr={[1, 2]}
         style={{ width: "100vw", height: "100vh" }}
-        camera={{ position: [12, 17, -12], fov: 35}}
-        onCreated={({ gl }) => gl.toneMapping = THREE.ReinhardToneMapping }
+        camera={{ position: [12, 17, -12], fov: 35 }}
+        onCreated={({ gl }) => (gl.toneMapping = THREE.ReinhardToneMapping)}
       >
-        <Sky 
-        sunPosition={[0,1,0]}
-        />
+        <Sky distance={450000} sunPosition={[0, 1, 0]} />
         <Suspense fallback={null}>
           <ambientLight intensity={1} />
-          <Field count={1000} />
+          <Field count={500} />
           <Plane args={[21.2, 21.2, 1, 1]} rotation-x={-Math.PI / 2}>
-            <meshBasicMaterial color={"#320"} />
+            <groundShader />
           </Plane>
           <Controls />
         </Suspense>
