@@ -79,6 +79,17 @@ const Field: React.FC<FieldProps> = ({ count }: FieldProps) => {
     };
   }, [count]);
 
+  const { rotationArray } = useMemo(() => {
+    const arr = new Array(count).fill(0);
+    return {
+      rotationArray: Float32Array.from(
+        arr.flatMap((_, i) => [
+          THREE.MathUtils.randFloat(0,Math.PI*2),
+        ])
+      ),
+    };
+  }, [count]);
+
   const [grassTexture] = useTexture([grassTex]);
 
   const { nodes } = useGLTF(grassModel) as unknown as GLTFResult;
@@ -116,6 +127,10 @@ const Field: React.FC<FieldProps> = ({ count }: FieldProps) => {
           attach="attributes-offset"
           args={[offsetArray, 3]}
         />
+        <instancedBufferAttribute
+          attach="attributes-rotation"
+          args={[rotationArray, 1]}
+        />
       </primitive>
       <mainShader
         ref={shaderRef}
@@ -134,9 +149,11 @@ const Scene: React.FC = () => {
         // dpr={[1, 2]}
         style={{ width: "100vw", height: "100vh" }}
         camera={{ position: [12, 17, -12], fov: 35}}
-        // onCreated={({ gl }) => gl.toneMapping = THREE.ReinhardToneMapping }
+        onCreated={({ gl }) => gl.toneMapping = THREE.ReinhardToneMapping }
       >
-        <Sky />
+        <Sky 
+        sunPosition={[0,1,0]}
+        />
         <Suspense fallback={null}>
           <ambientLight intensity={1} />
           <Field count={1000} />
