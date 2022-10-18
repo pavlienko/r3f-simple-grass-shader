@@ -145,6 +145,5 @@ export const MainShader = generateShader(
     gradient.xz += max(0.,rot) / 2.;
     gradient.y -= max(0.,rot) / 5.;
     gl_FragColor = vec4(gradient,texColor.a);
-    // gl_FragColor = vec4(vec3(rot),1.0);
   }`
 );
