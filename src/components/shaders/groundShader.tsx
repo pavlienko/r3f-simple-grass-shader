@@ -23,7 +23,8 @@ export const GroundShader = generateShader(
   varying float depth;
 
   void main() {
-    vec3 ground = vec3(0.082,0.027,0.);
+    // vec3 ground = vec3(0.082,0.027,0.);
+    vec3 ground = vec3(0.2,0.1,0.);
     ground += max(0.,depth)/2.;
     gl_FragColor = vec4(ground,1.0);
   }`

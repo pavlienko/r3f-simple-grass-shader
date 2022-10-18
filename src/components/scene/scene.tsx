@@ -158,7 +158,7 @@ const Scene: React.FC = () => {
         <Sky distance={450000} sunPosition={[0, 1, 0]} />
         <Suspense fallback={null}>
           <ambientLight intensity={1} />
-          <Field count={500} />
+          <Field count={700} />
           <Plane args={[21.2, 21.2, 1, 1]} rotation-x={-Math.PI / 2}>
             <groundShader />
           </Plane>
