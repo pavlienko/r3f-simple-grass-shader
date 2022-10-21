@@ -142,18 +142,17 @@ const Field: React.FC<FieldProps> = ({ count }: FieldProps) => {
         side={THREE.DoubleSide}
         uniforms={uniforms}
         transparent
-        // blending={THREE.CustomBlending}
-        // blendSrc={THREE.SrcAlphaFactor}
-        // blendDst={THREE.SrcColorFactor}
-        // blendSrcAlpha={THREE.DstAlphaFactor}
-        // blendDstAlpha={THREE.SrcColorFactor}
-        // depthTest
-        // depthWrite={false}
       />
     </instancedMesh>
   );
 };
 
+let fxaa = FXAAShader;
+
+fxaa.uniforms.resolution.value = new THREE.Vector2(
+  1 / window.innerWidth,
+  1 / window.innerHeight
+);
 
 const Scene: React.FC = () => {
   return (
@@ -177,13 +176,9 @@ const Scene: React.FC = () => {
           <Field count={700} />
         </Suspense>
         <Perf showGraph={false} />
-        {/* <Effects multisamping={64} disableGamma>
-          <shaderPass
-            // attach={`passes`}
-            args={[FXAAShader]}
-            // renderToScreen
-          />
-        </Effects> */}
+        <Effects multisamping={64} disableGamma>
+          <shaderPass args={[fxaa]} />
+        </Effects>
       </Canvas>
     </div>
   );
