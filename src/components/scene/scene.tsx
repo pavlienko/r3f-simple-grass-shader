@@ -1,4 +1,4 @@
-import { useTexture, Plane, useGLTF, Sky } from "@react-three/drei";
+import { useTexture, Plane, useGLTF, Sky, Effects } from "@react-three/drei";
 import {
   Canvas,
   extend,
@@ -10,12 +10,11 @@ import { Suspense, useRef, useMemo } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Perf } from "r3f-perf";
-import { GLTF } from "three-stdlib";
-
+import { GLTF, ShaderPass, FXAAShader, SSAOShader } from "three-stdlib";
 import { MainShader } from "../shaders/mainShader";
 import { GroundShader } from "../shaders/groundShader";
 import grassModel from "../../assets/grass.glb";
-import grassTex from "../../assets/grass.png";
+import grassTex from "../../assets/grass-new.png";
 
 declare global {
   namespace JSX {
@@ -32,6 +31,7 @@ declare global {
         OrbitControls,
         typeof OrbitControls
       >;
+      shaderPass: ReactThreeFiber.Node<ShaderPass, typeof ShaderPass>;
     }
   }
 }
@@ -52,6 +52,7 @@ useGLTF.preload(grassModel);
 extend({ MainShader });
 extend({ GroundShader });
 extend({ OrbitControls });
+extend({ ShaderPass });
 
 function Controls() {
   const controls = useRef<OrbitControls>(null!);
@@ -140,31 +141,49 @@ const Field: React.FC<FieldProps> = ({ count }: FieldProps) => {
         ref={shaderRef}
         side={THREE.DoubleSide}
         uniforms={uniforms}
-        transparent={true}
+        transparent
+        // blending={THREE.CustomBlending}
+        // blendSrc={THREE.SrcAlphaFactor}
+        // blendDst={THREE.SrcColorFactor}
+        // blendSrcAlpha={THREE.DstAlphaFactor}
+        // blendDstAlpha={THREE.SrcColorFactor}
+        // depthTest
+        // depthWrite={false}
       />
     </instancedMesh>
   );
 };
+
 
 const Scene: React.FC = () => {
   return (
     <div>
       <Canvas
         // dpr={[1, 2]}
+        // gl={{antialias: false}}
         style={{ width: "100vw", height: "100vh" }}
         camera={{ position: [12, 17, -12], fov: 35 }}
-        onCreated={({ gl }) => (gl.toneMapping = THREE.ReinhardToneMapping)}
+        onCreated={({ gl }) => {
+          gl.toneMapping = THREE.ReinhardToneMapping;
+        }}
       >
+        <Controls />
         <Sky distance={450000} sunPosition={[0, 1, 0]} />
         <Suspense fallback={null}>
           <ambientLight intensity={1} />
-          <Field count={700} />
           <Plane args={[21.2, 21.2, 1, 1]} rotation-x={-Math.PI / 2}>
             <groundShader />
           </Plane>
-          <Controls />
+          <Field count={700} />
         </Suspense>
         <Perf showGraph={false} />
+        {/* <Effects multisamping={64} disableGamma>
+          <shaderPass
+            // attach={`passes`}
+            args={[FXAAShader]}
+            // renderToScreen
+          />
+        </Effects> */}
       </Canvas>
     </div>
   );

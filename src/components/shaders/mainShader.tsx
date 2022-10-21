@@ -135,15 +135,16 @@ export const MainShader = generateShader(
   varying float rot;
 
   void main() {
-    vec4 texColor = texture(uTexture,vUv);
-    if(texColor.a < 0.5)
-    discard;
-    vec3 gradient = mix(vec3(0.1,0.01,0.),vec3(0.35,0.5,0.05),height );
+    vec4 texColor = texture2D(uTexture,vUv);
+    if(texColor.a < 0.5){
+      discard;
+    }
+    vec3 gradient = mix(vec3(0.1,0.01,0.),vec3(0.45,0.6,0.05),height );
     gradient += max(0.,depth)/ 2.;
     gradient *= max(0.7,rot/6.28);
-    gradient *= 2.;
     gradient.xz += max(0.,rot) / 2.;
     gradient.y -= max(0.,rot) / 5.;
-    gl_FragColor = vec4(gradient,texColor.a);
+    gradient *= 1.4;
+    gl_FragColor = vec4(gradient,texColor.r);
   }`
 );
