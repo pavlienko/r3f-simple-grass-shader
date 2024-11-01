@@ -29,6 +29,5 @@
 <div align="center">
 
 ## [pavlienko.com](https://pavlienko.com)
-![image info](https://storage.yandexcloud.net/pavlienko-com-2022/images/favicon/logo.svg)
 
 </div>
