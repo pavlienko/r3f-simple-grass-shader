@@ -24,8 +24,6 @@
 
 ...
 
----
-
 <div align="center">
 
 ## [pavlienko.com](https://pavlienko.com)
