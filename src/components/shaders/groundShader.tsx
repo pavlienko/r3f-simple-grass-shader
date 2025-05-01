@@ -2,30 +2,24 @@ import { generateShader } from "../../utils/generateShader";
 
 export const GroundShader = generateShader(
   "GroundShader",
-  /* glsl */ `
+  /* vertex */ `
   varying vec2 vUv;
   varying float depth;
-
   void main() {
-    vec3 Pos = position;
-    vec4 modelPosition = modelMatrix * vec4(Pos,1.0);
-    vec4 ModelPosition = viewMatrix * modelPosition;
-    vec4 ViewPosition =  ModelPosition;
-    vec4 ProjectedPosition = projectionMatrix * ViewPosition;
-    gl_Position = ProjectedPosition;
     vUv = uv;
-    depth = ProjectedPosition.z * 0.1 - 3.;
+    vec4 worldPos = modelMatrix * vec4(position, 1.0);
+    vec4 viewPos = viewMatrix * worldPos;
+    vec4 projPos = projectionMatrix * viewPos;
+    depth = projPos.z * 0.1 - 3.0;
+    gl_Position = projPos;
   }`,
-  /* glsl */ `
-  #include <packing>
-
+  /* fragment */ `
   varying vec2 vUv;
   varying float depth;
-
   void main() {
-    // vec3 ground = vec3(0.082,0.027,0.);
-    vec3 ground = vec3(0.2,0.1,0.);
-    ground += max(0.,depth)/2.;
-    gl_FragColor = vec4(ground,1.0);
+    vec3 base = vec3(0.2, 0.1, 0.0);
+    // simple depth-based lightening
+    base += max(depth, 0.0) * 0.5;
+    gl_FragColor = vec4(base, 1.0);
   }`
 );
