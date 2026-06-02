@@ -1,10 +1,10 @@
 import { generateShader } from "../../utils/generateShader";
 
 export const GroundShader = generateShader(
-  "GroundShader",
+    "GroundShader",
   /* glsl */ `
   varying vec2 vUv;
-  varying float depth;
+  varying float vViewZDepth;
 
   void main() {
     vec3 Pos = position;
@@ -14,18 +14,26 @@ export const GroundShader = generateShader(
     vec4 ProjectedPosition = projectionMatrix * ViewPosition;
     gl_Position = ProjectedPosition;
     vUv = uv;
-    depth = ProjectedPosition.z * 0.1 - 3.;
+
+    vViewZDepth = -ViewPosition.z;
   }`,
   /* glsl */ `
   #include <packing>
 
   varying vec2 vUv;
-  varying float depth;
+  varying float vViewZDepth;
 
   void main() {
-    // vec3 ground = vec3(0.082,0.027,0.);
     vec3 ground = vec3(0.2,0.1,0.);
-    ground += max(0.,depth)/2.;
-    gl_FragColor = vec4(ground,1.0);
+
+    float density = 0.012; 
+
+    float fogFactor = 1.0 - exp(-pow(vViewZDepth * density, 2.0));
+    fogFactor = clamp(fogFactor, 0.0, 1.0);
+    vec3 fogColor = vec3(0.88, 0.89, 0.91);
+
+    vec3 finalColor = mix(ground, fogColor, fogFactor);
+
+    gl_FragColor = vec4(finalColor,1.0);
   }`,
 );
